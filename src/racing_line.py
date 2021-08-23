@@ -34,10 +34,19 @@ class Sector:
 
         """
         a = (self.end - self.start).length
-        b = (self.end - self.mid).length ** 2)
-        c = (self.mid - self.start).length ** 2)
+        b = (self.end - self.mid).length
+        c = (self.mid - self.start).length
         cos_angle = ((c ** 2) + (b ** 2) - (a ** 2)) / (2 * b * c)
+        
+        if cos_angle > 1:
+            cos_angle = 1
+        elif cos_angle < -1:
+            cos_angle = -1
+
         sector_angle = math.acos(cos_angle)
+        if sector_angle == 0 or sector_angle == math.pi:
+            return math.inf
+        
         radius = a / (2 * math.sin(math.pi - sector_angle))
         return radius
 
