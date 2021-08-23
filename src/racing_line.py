@@ -4,6 +4,44 @@ Module for racing lines.
 
 import math
 
+class Sector:
+    """
+    Class representing a sector in a racing line.
+    A sector is a path representing by 3 points in space, the start, the middle and an end.
+    """
+    
+    def __init__(self, vertices):
+        """
+        Method to initialize a sector.
+        
+        Args:
+            vertices(tuple): List of vertices in the sector.
+
+        """
+        self.vertices = vertices
+        self.start = vertices[0]
+        self.mid = vertices[1]
+        self.end = vertices[2]
+        
+    @property
+    def radius(self):
+        """
+        Gets the radius of the path along the sector.
+        Reference: http://www.jameshakewill.com/Lap_Time_Simulation.pdf
+        
+        Returns:
+            radius(float): Radius of the sector in metres.
+
+        """
+        a = (self.end - self.start).length
+        b = (self.end - self.mid).length ** 2)
+        c = (self.mid - self.start).length ** 2)
+        cos_angle = ((c ** 2) + (b ** 2) - (a ** 2)) / (2 * b * c)
+        sector_angle = math.acos(cos_angle)
+        radius = a / (2 * math.sin(math.pi - sector_angle))
+        return radius
+
+
 class RacingLine:
     """
     Class representing a racing line.
@@ -20,22 +58,41 @@ class RacingLine:
         self.vertices = []
         if vertices is not None:
             self.vertices = vertices
-            
-    @property
-    def distance(self):
+
+    def get_sector(self, idx):
         """
-        Gets the distance of a racing line.
+        Method to get the sector for a given vertex index.
+        
+        Args:
+            idx(int): Index of the vertex to get the sector for.
+
+        Returns:
+            sector(Sector): Sector of the given vertex.
+
+        """
+        if (idx >= len(self.vertices)):
+            return None
+
+        sector = Sector([self.vertices[idx - 1], self.vertices[idx], self.vertices[(idx + 1) % len(self.vertices)]])
+        return sector
+
+    @property
+    def length(self):
+        """
+        Gets the length of a racing line.
+        
+        Returns:
+            length(float): Length of racing line in metres.
+
         """
         if not self.vertices:
             return 0
         
-        distance = 0
+        length = 0
         prev_vert = self.vertices[0]
         
         for vertex in self.vertices:
-            distance = distance + math.sqrt(((vertex.x - prev_vert.x) ** 2) +
-                                            ((vertex.y - prev_vert.y) ** 2) +
-                                            ((vertex.z - prev_vert.z) ** 2))
+            length = length + (vertex - prev_vert).length
             prev_vert = vertex
         
-        return distance
+        return length
