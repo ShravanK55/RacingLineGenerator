@@ -4,6 +4,7 @@ Module for racing lines.
 
 import math
 
+
 class Sector:
     """
     Class representing a sector in a racing line.
