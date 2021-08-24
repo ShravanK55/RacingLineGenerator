@@ -5,6 +5,9 @@ Script to generate racing lines using genetic algorithms.
 import bpy, bmesh, os, struct, math
 from mathutils import Vector
 
+from car import Car
+from racing_line import RacingLine
+
 
 TRACK_FILE_NAME = "fast_lane.ai"
 BORDER_LEFT_NAME = "border_left6"
@@ -21,7 +24,10 @@ right_loc = right_lane.matrix_world @ right_lane.data.vertices[0].co
 
 left_locs = [left_lane.matrix_world @ vertex.co for vertex in left_lane.data.vertices]
 left_line = RacingLine(left_locs)
+car = Car()
 
 print("The track distance is " + str(left_line.length) + "m.")
 sector_0 = left_line.get_sector(0)
-print("Vertex 0 radius is: {}".format(sector_0.radius))
+print("Sector 0 radius is: {}".format(sector_0.radius))
+print("Sector 0 length is: {}".format(sector_0.length))
+print("Sector 0 max speed: {}".format(car.get_max_velocity(sector_0) * 3.6))

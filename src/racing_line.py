@@ -51,6 +51,27 @@ class Sector:
         radius = a / (2 * math.sin(math.pi - sector_angle))
         return radius
 
+    @property
+    def length(self):
+        """
+        Gets the length of a sector.
+        
+        Returns:
+            length(float): Length of sector in metres.
+
+        """
+        if not self.vertices:
+            return 0
+        
+        length = 0
+        prev_vert = self.vertices[0]
+        
+        for vertex in self.vertices:
+            length = length + (vertex - prev_vert).length
+            prev_vert = vertex
+        
+        return length
+
 
 class RacingLine:
     """
