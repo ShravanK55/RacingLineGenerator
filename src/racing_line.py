@@ -108,7 +108,6 @@ class RacingLine:
         start_idx = idx - (idx % 3)
         mid_idx = (start_idx + 1) % len(self.vertices)
         end_idx = (start_idx + 2) % len(self.vertices)
-        print("Vertices are {}, {}, {}.".format(start_idx, mid_idx, end_idx))
         
         sector = Sector([self.vertices[start_idx], self.vertices[mid_idx], self.vertices[end_idx]])
         return sector
