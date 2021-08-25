@@ -102,9 +102,15 @@ class RacingLine:
 
         """
         if (idx >= len(self.vertices)):
-            return None
+            idx = idx % len(self.vertices)
 
-        sector = Sector([self.vertices[idx - 1], self.vertices[idx], self.vertices[(idx + 1) % len(self.vertices)]])
+        # Given that there are 3 vertices in a sector, the sector index would be a third of the vertex index.
+        start_idx = idx - (idx % 3)
+        mid_idx = (start_idx + 1) % len(self.vertices)
+        end_idx = (start_idx + 2) % len(self.vertices)
+        print("Vertices are {}, {}, {}.".format(start_idx, mid_idx, end_idx))
+        
+        sector = Sector([self.vertices[start_idx], self.vertices[mid_idx], self.vertices[end_idx]])
         return sector
 
     @property
