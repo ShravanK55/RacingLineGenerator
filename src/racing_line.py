@@ -113,6 +113,21 @@ class RacingLine:
         return sector
 
     @property
+    def sectors(self):
+        """
+        Method to get all the sectors in a racing line.
+
+        Returns:
+            sectors(list): Returns a list of all the sectors in the racing line.
+
+        """
+        if not self.vertices:
+            return []
+        
+        sectors = [self.get_sector(i) for i in range(int(len(self.vertices) / 3))]
+        return sectors
+
+    @property
     def length(self):
         """
         Gets the length of a racing line.
