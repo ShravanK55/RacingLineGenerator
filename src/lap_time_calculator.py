@@ -66,15 +66,14 @@ class LapTimeCalculator:
             dist_sum = dist_sum + sector.length
             distances.append(dist_sum)
 
-        """
-        pyplot.clf()
-        pyplot.plot(distances, exit_velocities, label="Line")
-        pyplot.xlabel("Distance (m)")
-        pyplot.ylabel("Exit Velocity (m/s)")
-        pyplot.title("Velocity Graph")
-        pyplot.legend()
-        pyplot.savefig("velocity_graph.png")
-        """
+        if draw_graph:
+            pyplot.clf()
+            pyplot.plot(distances, exit_velocities, label="Line")
+            pyplot.xlabel("Distance (m)")
+            pyplot.ylabel("Exit Velocity (m/s)")
+            pyplot.title("Velocity Graph")
+            pyplot.legend()
+            pyplot.savefig("velocity_graph.png")
 
         # Calculating the lap time from the sector times.
         lap_time = 0.0
