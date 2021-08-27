@@ -2,6 +2,7 @@
 Module to calculate lap times for a given car and racing line.
 """
 
+# from matplotlib import pyplot
 from constants import AIR_DENSITY, GRAV_ACCELERATION
 
 
@@ -16,7 +17,7 @@ class LapTimeCalculator:
         """
         pass
     
-    def calculate_lap_time(self, racing_line, car, starting_velocity=0.0):
+    def calculate_lap_time(self, racing_line, car, starting_velocity=0.0, draw_graph=True):
         """
         Method to calculate the lap time of a car moving along a racing line.
         Calculation reference: http://www.jameshakewill.com/Lap_Time_Simulation.pdf (Pages 15 and 18)
@@ -25,6 +26,7 @@ class LapTimeCalculator:
             racing_line(RacingLine): Racing line for the car to drive around.
             car(Car): Car that will drive on the racing line.
             starting_velocity(float): Velocity at which the car starts on the racing line in m/s. Defaults to 0.0.
+            draw_graph(bool): Whether to plot the graph of exit velocity v/s sector time. Defaults to True.
 
         Returns:
             lap_time(float): Lap time taken by the car to drive around the racing line in seconds.
@@ -58,10 +60,21 @@ class LapTimeCalculator:
             last_sector_idx = current_sector_idx
         
         # Calculate the time taken for each sector.
-        sector_times = []
-        for idx in range(len(sectors)):
-            sector_time = 2 * sectors[idx].length / (entry_velocities[idx] + exit_velocities[idx])
-            sector_times.append(sector_time)
+        dist_sum = 0
+        distances = []
+        for sector in sectors:
+            dist_sum = dist_sum + sector.length
+            distances.append(dist_sum)
+
+        """
+        pyplot.clf()
+        pyplot.plot(distances, exit_velocities, label="Line")
+        pyplot.xlabel("Distance (m)")
+        pyplot.ylabel("Exit Velocity (m/s)")
+        pyplot.title("Velocity Graph")
+        pyplot.legend()
+        pyplot.savefig("velocity_graph.png")
+        """
 
         # Calculating the lap time from the sector times.
         lap_time = 0.0

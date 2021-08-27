@@ -131,3 +131,6 @@ dmypy.json
 # Track/line data.
 generated_lines/*
 tracks/*
+
+# Generated graphs.
+*.png

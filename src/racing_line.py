@@ -92,20 +92,20 @@ class RacingLine:
 
     def get_sector(self, idx):
         """
-        Method to get the sector for a given vertex index.
+        Method to get the sector at a given index.
         
         Args:
-            idx(int): Index of the vertex to get the sector for.
+            idx(int): Index of the the sector to get.
 
         Returns:
-            sector(Sector): Sector of the given vertex.
+            sector(Sector): Sector of the given index.
 
         """
-        if (idx >= len(self.vertices)):
-            idx = idx % len(self.vertices)
+        if (idx >= int(len(self.vertices) / 2)):
+            idx = idx % int((len(self.vertices) / 2))
 
         # Given that there are 3 vertices in a sector, the sector index would be a third of the vertex index.
-        start_idx = idx - (idx % 3)
+        start_idx = idx * 2
         mid_idx = (start_idx + 1) % len(self.vertices)
         end_idx = (start_idx + 2) % len(self.vertices)
         
@@ -124,7 +124,13 @@ class RacingLine:
         if not self.vertices:
             return []
         
-        sectors = [self.get_sector(i) for i in range(int(len(self.vertices) / 3))]
+        sectors = []
+        idx = 0
+        for _ in range(0, len(self.vertices), 2):
+            sector = self.get_sector(idx)
+            sectors.append(sector)
+            idx = idx + 1
+
         return sectors
 
     @property
