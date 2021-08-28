@@ -90,6 +90,34 @@ class RacingLine:
         if vertices is not None:
             self.vertices = vertices
 
+    @staticmethod
+    def generate_from_weights(weights, left_limit, right_limit):
+        """
+        Method to generate a racing line from weights (Refer to the evolutionary_strategy module).
+        NOTE: This method assumes that the length of the weights, left track limit vertices and right track limit
+        vertices are the same. The method may not work as expected if they are not.
+
+        Args:
+            weights(list): List of weights, each of which range from [0.0, 1.0].
+            left_limit(RacingLine): Left side track limit.
+            right_limit(RacingLine): Right side track limit.
+
+        Returns:
+            racing_line(RacingLine): A racing line generated from the weights and the track limits.
+
+        """
+        l_verts = left_limit.vertices
+        r_verts = right_limit.vertices
+        vertices = []
+        
+        for idx in range(len(l_verts)):
+            t_vec = r_verts[idx] - l_verts[idx]
+            vert = l_verts[idx] + (t_vec * weights[idx])
+            vertices.append(vert)
+
+        racing_line = RacingLine(vertices)
+        return racing_line
+
     def get_sector(self, idx):
         """
         Method to get the sector at a given index.

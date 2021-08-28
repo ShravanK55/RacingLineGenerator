@@ -2,7 +2,7 @@
 Module to calculate lap times for a given car and racing line.
 """
 
-# from matplotlib import pyplot
+from matplotlib import pyplot
 from constants import AIR_DENSITY, GRAV_ACCELERATION
 
 
@@ -60,12 +60,18 @@ class LapTimeCalculator:
             last_sector_idx = current_sector_idx
         
         # Calculate the time taken for each sector.
+        sector_times = []
+        for idx in range(len(sectors)):
+            sector_time = 2 * sectors[idx].length / (entry_velocities[idx] + exit_velocities[idx])
+            sector_times.append(sector_time)
+
         dist_sum = 0
         distances = []
         for sector in sectors:
             dist_sum = dist_sum + sector.length
             distances.append(dist_sum)
 
+        # Plotting a graph of the track distance v/s the velocity at that point.
         if draw_graph:
             pyplot.clf()
             pyplot.plot(distances, exit_velocities, label="Line")

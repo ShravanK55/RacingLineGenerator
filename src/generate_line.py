@@ -20,11 +20,10 @@ right_lane_name = TRACK_FILE_NAME + "_" + BORDER_RIGHT_NAME
 left_lane = bpy.data.objects[left_lane_name]
 right_lane = bpy.data.objects[right_lane_name]
 
-left_loc = left_lane.matrix_world @ left_lane.data.vertices[0].co
-right_loc = right_lane.matrix_world @ right_lane.data.vertices[0].co
-
 left_locs = [left_lane.matrix_world @ vertex.co for vertex in left_lane.data.vertices]
+right_locs = [right_lane.matrix_world @ vertex.co for vertex in right_lane.data.vertices]
 left_line = RacingLine(left_locs)
+right_line = RacingLine(right_locs)
 car = Car()
 lap_time_calculator = LapTimeCalculator()
 
