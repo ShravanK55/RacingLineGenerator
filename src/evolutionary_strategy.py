@@ -4,6 +4,7 @@ Module that implements the evolutionary strategy.
 
 import numpy
 import random
+from scipy.signal import savgol_filter
 
 from constants import REFERENCE_FITNESS
 from lap_time_calculator import LapTimeCalculator
@@ -51,8 +52,8 @@ class EvolutionaryStrategy:
     The module implementing the evolutionary strategy.
     """
 
-    def __init__(self, left_limit, right_limit, weight_group_size=20, population_size=50, iterations=5,
-                 num_offspring=50, mutation_factor=0.5, standard_deviation=0.3):
+    def __init__(self, left_limit, right_limit, weight_group_size=20, smoothing_length=9, smoothing_order=1,
+                 population_size=50, iterations=5, num_offspring=50, mutation_factor=0.5, standard_deviation=0.3):
         """
         Method to initialize the evolutionary strategy.
 
@@ -60,6 +61,8 @@ class EvolutionaryStrategy:
             left_limit(RacingLine): Left side track limit.
             right_limit(RacingLine): Right side track limit.
             weight_group_size(int): Number of weights to group together. Defaults to 20.
+            smoothing_length(int): Length of weights to smoothen at the ends of each weight group. Defaults to 9.
+            smoothing_order(int): Order of interpolation to use for smoothing. Defaults to 1 (Linear).
             population_size(int): Size of the population to be used. Defaults to 50.
             iterations(int): Number of iterations to run the algorithm for. Defaults to 5.
             num_offspring(int): Number of offspring to generate each generation. Defaults to 50.
@@ -70,6 +73,8 @@ class EvolutionaryStrategy:
         self.right_limit = right_limit
         self.left_limit = left_limit
         self.weight_group_size = weight_group_size
+        self.smoothing_length = smoothing_length
+        self.smoothing_order = smoothing_order
         self.population_size = population_size
         self.iterations = iterations
         self.population = []
@@ -87,7 +92,15 @@ class EvolutionaryStrategy:
         """
         population = []
         for _ in range(self.population_size):
-            weights = [random.uniform(0.0, 1.0) for _ in self.left_limit.vertices]
+            # Creating weights in groups.
+            weights = []
+            for _ in range(0, len(self.left_limit.vertices), self.weight_group_size):
+                weights.extend([random.uniform(0.0, 1.0)] * self.weight_group_size)
+
+            # Smoothening weights using the Savitzsky-Golay filter (cubic).
+            if self.smoothing_length > 0:
+                weights = list(savgol_filter(weights, self.smoothing_length, self.smoothing_order))
+
             population.append(Candidate(weights))
 
         self.population = population
@@ -103,16 +116,26 @@ class EvolutionaryStrategy:
         """
         offspring = []
 
-        for _ in range(len(self.num_offspring)):
-            idx = numpy.random(0, len(self.population))
+        for _ in range(self.num_offspring):
+            idx = numpy.random.randint(0, self.population_size)
             parent = self.population[idx]
-            path_vector = numpy.random.normal(0.0, self.standard_deviation, len(parent.weights))
+            path_vector = []
+
+            # Generating the path vector from normally distributed values for every weight group.
+            for _ in range(0, len(parent.weights), self.weight_group_size):
+                delta_weights = list(numpy.random.normal(0.0, self.standard_deviation, 1)) * self.weight_group_size
+                path_vector.extend(delta_weights)
+
             mutated_vector = [weight * self.mutation_factor for weight in path_vector]
             offspring_weights = []
 
             for w_idx in range(len(parent.weights)):
                 offspring_weight = clamp(parent.weights[w_idx] + mutated_vector[w_idx], 0.0, 1.0)
                 offspring_weights.append(offspring_weight)
+
+            # Smoothening weights using the Savitzsky-Golay filter (cubic).
+            if self.smoothing_length > 0:
+                offspring_weights = list(savgol_filter(offspring_weights, self.smoothing_length, self.smoothing_order))
 
             new_candidate = Candidate(offspring_weights)
             offspring.append(new_candidate)

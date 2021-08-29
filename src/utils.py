@@ -21,18 +21,19 @@ def clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
 
 
-def generate_mesh_from_vertices(vertices, mesh_name="racing_line"):
+def generate_mesh_from_vertices(vertices, mesh_name="racing_line", collection_name="Collection"):
     """
     Method to generate a mesh in blender from a list of vertex locations.
 
     Args:
         vertices(list): List of vertices to create the mesh from.
         mesh_name(str): Name of the mesh to be created. Defaults to "racing_line".
+        collection_name(str): Name of the collection to add the mesh to. Defaults to "Collection".
 
     """
     mesh = bpy.data.meshes.new(mesh_name)  # add the new mesh
     obj = bpy.data.objects.new(mesh.name, mesh)
-    col = bpy.data.collections.get("Collection")
+    col = bpy.data.collections.get(collection_name)
     col.objects.link(obj)
 
     edges = []
