@@ -8,3 +8,6 @@ AIR_DENSITY = 1.19
 
 # Gravitional acceleration in m/s^2.
 GRAV_ACCELERATION = 9.8
+
+# Reference value to use during lap time fitness calculation.
+REFERENCE_FITNESS = 300

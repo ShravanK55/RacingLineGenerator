@@ -6,6 +6,7 @@ import bpy, bmesh, os, struct, math
 from mathutils import Vector
 
 from car import Car
+from evolutionary_strategy import EvolutionaryStrategy
 from lap_time_calculator import LapTimeCalculator
 from racing_line import RacingLine
 
@@ -36,3 +37,7 @@ print("Sector 0 entry speed: {}".format(lap_time_calculator.get_sector_entry_vel
 print("Sector 0 exit speed: {}".format(lap_time_calculator.get_sector_exit_velocity(sector_0, car, 0.0) * 3.6))
 lap_time = lap_time_calculator.calculate_lap_time(left_line, car, 80.0)
 print("Lap time: {}".format(lap_time))
+
+e_strat = EvolutionaryStrategy(left_line, right_line)
+pop = e_strat.generate_population()
+print("Population 0: {}".format(pop[0].weights[0]))

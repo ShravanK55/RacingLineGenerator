@@ -10,13 +10,13 @@ class LapTimeCalculator:
     """
     Class to calculate lap times for a given car and racing line.
     """
-    
+
     def __init__(self):
         """
         Method to initialize the lap time calculator.
         """
         pass
-    
+
     def calculate_lap_time(self, racing_line, car, starting_velocity=0.0, draw_graph=True):
         """
         Method to calculate the lap time of a car moving along a racing line.
@@ -46,7 +46,7 @@ class LapTimeCalculator:
             entry_velocities.append(entry_velocity)
             exit_velocities.append(exit_velocity)
             entry_velocity = exit_velocity
-        
+
         # Second pass to adjust the entry velocities of each sector based on the exit velocities (to apply braking).
         last_sector_idx = 0
         for current_sector_idx in reversed(range(len(sectors))):
@@ -56,9 +56,9 @@ class LapTimeCalculator:
                 if entry_velocities[current_sector_idx] > max_entry_velocity:
                     entry_velocities[current_sector_idx] = max_entry_velocity
                 exit_velocities[current_sector_idx] = entry_velocities[last_sector_idx]
-            
+
             last_sector_idx = current_sector_idx
-        
+
         # Calculate the time taken for each sector.
         sector_times = []
         for idx in range(len(sectors)):
@@ -92,11 +92,11 @@ class LapTimeCalculator:
         """
         Gets the maximum velocity a car can take around a sector.
         Reference: http://www.jameshakewill.com/Lap_Time_Simulation.pdf (Page 10)
-        
+
         Args:
             sector(Sector): Reference to the sector that the car is travelling on.
             car(Car): Car that is moving through the sector.
-        
+
         Returns:
             velocity(float): The maximum velocity a car can go while travelling in a sector in m/s.
 
@@ -113,12 +113,12 @@ class LapTimeCalculator:
         """
         Gets the entry velocity of a car through a sector from an exit velocity through braking.
         Reference: http://www.jameshakewill.com/Lap_Time_Simulation.pdf (Page 17)
-        
+
         Args:
             sector(Sector): Reference to the sector that the car is travelling on.
             car(Car): Car that is moving through the sector.
             exit_velocity(float): Velocity with which the car exits the sector in m/s.
-        
+
         Returns:
             entry_velocity(float): The maximum entry velocity of a car going into a given sector in m/s.
 
@@ -137,12 +137,12 @@ class LapTimeCalculator:
         """
         Gets the exit velocity of a car through a sector from an entry velocity through acceleration.
         Reference: http://www.jameshakewill.com/Lap_Time_Simulation.pdf (Page 10)
-        
+
         Args:
             sector(Sector): Reference to the sector that the car is travelling on.
             car(Car): Car that is moving through the sector.
             entry_velocity(float): Velocity with which the car enters the sector in m/s.
-        
+
         Returns:
             exit_velocity(float): The maximum exit velocity of a car going out a given sector in m/s.
 
@@ -156,4 +156,4 @@ class LapTimeCalculator:
         exit_velocity = ((entry_velocity ** 2) + (2 * acceleration * sector.length)) ** (1.0 / 2.0)
         exit_velocity = car.max_velocity if exit_velocity > car.max_velocity else exit_velocity
         return exit_velocity
-    
+

@@ -10,12 +10,12 @@ class Car:
     Class representing a racing car.
     Defaults values are set with respect to a modern Formula 1 car.
     """
-    
+
     def __init__(self, max_velocity=100.0, max_acceleration=15.5, friction=1.6, mass=740.0, drag_coefficient=1.0,
                  frontal_area=1.5, base_engine_power=100000.0, max_engine_power=800000.0):
         """
         Method to initialize a racing car. The defaults are set to the reference of a modern Formula 1 car.
-        
+
         Args:
             max_velocity(float): Maximum velocity of the car in m/s. Defaults to 100.0 m/s (360 kmph).
                 Default Reference: https://en.wikipedia.org/wiki/Formula_One_car
@@ -57,7 +57,7 @@ class Car:
         """
         diff = self.max_engine_power - self.base_engine_power
         engine_power = self.base_engine_power
-        
+
         if velocity >= 0.0 and velocity < 10.0:
             engine_power = engine_power + (diff * 0.2)
         elif velocity >= 10.0 and velocity < 40.0:
@@ -68,23 +68,23 @@ class Car:
             engine_power = engine_power + (diff * 0.9)
         else:
             engine_power = self.max_engine_power
-        
+
         return engine_power
 
     def get_max_acceleration(self, velocity):
         """
         Gets the maximum acceleration a car can have at a given velocity.
         Reference: https://en.wikipedia.org/wiki/Formula_One_car#Acceleration
-        
+
         Args:
             velocity(float): Velocity that the car is currently running at.
-        
+
         Returns:
             acceleration(float): The maximum velocity a car can go while travelling in a sector in m/s.
 
         """
         acceleration = self.max_acceleration
-        
+
         # 0-100 kmph.
         if velocity >= 0.0 and velocity < 28.0:
             acceleration = acceleration * 0.75
@@ -99,5 +99,5 @@ class Car:
             acceleration = acceleration * 0.3
         else:
             acceleration = 0.0
-        
+
         return acceleration
