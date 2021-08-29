@@ -31,7 +31,7 @@ def generate_mesh_from_vertices(vertices, mesh_name="racing_line", collection_na
         collection_name(str): Name of the collection to add the mesh to. Defaults to "Collection".
 
     """
-    mesh = bpy.data.meshes.new(mesh_name)  # add the new mesh
+    mesh = bpy.data.meshes.new(mesh_name)
     obj = bpy.data.objects.new(mesh.name, mesh)
     col = bpy.data.collections.get(collection_name)
     col.objects.link(obj)

@@ -9,6 +9,7 @@ from car import Car
 from evolutionary_strategy import EvolutionaryStrategy
 from lap_time_calculator import LapTimeCalculator
 from racing_line import RacingLine
+from utils import generate_mesh_from_vertices
 
 
 TRACK_FILE_NAME = "fast_lane.ai"
@@ -38,6 +39,7 @@ print("Sector 0 exit speed: {}".format(lap_time_calculator.get_sector_exit_veloc
 lap_time = lap_time_calculator.calculate_lap_time(left_line, car, 80.0)
 print("Lap time: {}".format(lap_time))
 
-e_strat = EvolutionaryStrategy(left_line, right_line)
-pop = e_strat.generate_population()
-print("Population 0: {}".format(pop[0].weights[0]))
+strategy = EvolutionaryStrategy(left_line, right_line, car, starting_velocity=80.0)
+best_candidate = strategy.run()
+r_line = RacingLine.generate_from_weights(best_candidate.weights, left_line, right_line)
+generate_mesh_from_vertices(r_line.vertices)

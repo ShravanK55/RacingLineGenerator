@@ -6,7 +6,6 @@ import numpy
 import random
 from scipy.signal import savgol_filter
 
-from constants import REFERENCE_FITNESS
 from lap_time_calculator import LapTimeCalculator
 from racing_line import RacingLine
 from utils import clamp
@@ -32,19 +31,14 @@ class Candidate:
 
         """
         self.weights = weights if weights else []
-        self.lap_time = -1
+        self.lap_time = None
 
     @property
     def fitness(self):
         """
-        Method to get the fitness of a candidate.
+        Gets the fitness of the Candidate.
         """
-
-        if (self.lap_time):
-            return REFERENCE_FITNESS - self.lap_time
-
-        lap_time_calculator = LapTimeCalculator()
-        lap_time_calculator.calculate_lap_time(RacingLine.generate_from_weights(self.weights))
+        return self.lap_time
 
 
 class EvolutionaryStrategy:
@@ -52,14 +46,17 @@ class EvolutionaryStrategy:
     The module implementing the evolutionary strategy.
     """
 
-    def __init__(self, left_limit, right_limit, weight_group_size=20, smoothing_length=9, smoothing_order=1,
-                 population_size=50, iterations=5, num_offspring=50, mutation_factor=0.5, standard_deviation=0.3):
+    def __init__(self, left_limit, right_limit, car, starting_velocity=0.0, weight_group_size=20, smoothing_length=9,
+                 smoothing_order=1, population_size=50, iterations=5, num_offspring=50, mutation_factor=0.5,
+                 standard_deviation=0.3):
         """
         Method to initialize the evolutionary strategy.
 
         Args:
             left_limit(RacingLine): Left side track limit.
             right_limit(RacingLine): Right side track limit.
+            car(Car): Car to evaluate the racing line for.
+            starting_velocity(float): Starting velocity of the car in m/s. Defaults to 0.0 m/s.
             weight_group_size(int): Number of weights to group together. Defaults to 20.
             smoothing_length(int): Length of weights to smoothen at the ends of each weight group. Defaults to 9.
             smoothing_order(int): Order of interpolation to use for smoothing. Defaults to 1 (Linear).
@@ -72,6 +69,8 @@ class EvolutionaryStrategy:
         """
         self.right_limit = right_limit
         self.left_limit = left_limit
+        self.car = car
+        self.starting_velocity = starting_velocity
         self.weight_group_size = weight_group_size
         self.smoothing_length = smoothing_length
         self.smoothing_order = smoothing_order
@@ -143,9 +142,72 @@ class EvolutionaryStrategy:
         self.population.extend(offspring)
         return offspring
 
+    def calculate_fitness(self, candidate):
+        """
+        Method to evaluate the fitness of a candidate. In this case, the lower the fitness, the better it is.
+
+        Args:
+            candidate(Candidate): Candidate to evaluate the fitness for.
+
+        Returns:
+            fitness(float): Fitness of the candidate.
+
+        """
+        if (candidate.fitness):
+            return candidate.fitness
+
+        line = RacingLine.generate_from_weights(candidate.weights, self.left_limit, self.right_limit)
+        lap_time_calculator = LapTimeCalculator()
+        candidate.lap_time = lap_time_calculator.calculate_lap_time(line, self.car, self.starting_velocity)
+        return candidate.fitness
+
     def perform_selection(self):
         """
-        Method to perform selection of candidates in the population.
-        """
-        pass
+        Method to perform selection of Candidates in the population. The selection method is the Roulette-Wheel
+        selection.
 
+        Returns:
+            population(list): List of Candidates after performing selection.
+
+        """
+        for candidate in self.population:
+            self.calculate_fitness(candidate)
+
+        population_fitness = sum([candidate.fitness for candidate in self.population])
+        probabilities = [candidate.fitness / population_fitness for candidate in self.population]
+
+        # Taking the complement of the probabilities as we have to minimize the lap time.
+        probabilities = 1 - numpy.array(probabilities)
+        probabilities = probabilities / probabilities.sum()
+
+        print("Best (Min) Fitness: {}".format(min([candidate.fitness for candidate in self.population])))
+        print("Average Fitness: {}".format(population_fitness / len(self.population)))
+
+        self.population = list(numpy.random.choice(self.population, size=self.population_size, replace=False,
+                                                   p=probabilities))
+        return self.population
+
+    def run(self):
+        """
+        Method to run the strategy.
+
+        Returns:
+            best_candidate(Candidate): Candidate with the best fitness (least lap time) in the final population.
+
+        """
+        self.generate_population()
+
+        for generation in range(self.iterations):
+            print("Generation {}".format(generation))
+            self.generate_offspring()
+            self.perform_selection()
+            print("")
+
+        best_candidate = self.population[0]
+        for idx in range(1, self.population_size):
+            # Select the candidate with the least lap time.
+            if (self.population[idx].fitness < best_candidate.fitness):
+                best_candidate = self.population[idx]
+
+        print("Best fitness after running the algorithm: {}".format(best_candidate.fitness))
+        return best_candidate
