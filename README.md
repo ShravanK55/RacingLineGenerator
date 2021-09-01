@@ -16,11 +16,14 @@ Lap times are used as the fitness measurement of a candidate/solution. The lesse
 
 # Screenshots
 
-[Track imported into Blender](https://i.imgur.com/osTFYnV.png)
+Austria Red Bull Ring track imported into blender.
+![Track imported into Blender](https://i.imgur.com/osTFYnV.png)
 
-[Sample output after 15 generations](https://i.imgur.com/yYR68Ho.png)
+Initial output of the algorithm after 15 generations.
+![Sample output after 15 generations](https://i.imgur.com/yYR68Ho.png)
 
-[Velocity graph of algorithm v/s telemetry of a 2021 F1 car](https://i.imgur.com/u7myOng.png)
+Velocity graph of a line computed in the algorithm and comparison with the telemetry of an F1 car.
+![Velocity graph of algorithm v/s telemetry of a 2021 F1 car](https://i.imgur.com/u7myOng.png)
 
 # Next Steps
 
