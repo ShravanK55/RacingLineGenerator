@@ -2,8 +2,6 @@
 Module for cars.
 """
 
-from constants import AIR_DENSITY, GRAV_ACCELERATION
-
 
 class Car:
     """

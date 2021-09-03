@@ -2,7 +2,7 @@
 Module that implements the evolutionary strategy.
 """
 
-import numpy
+import numpy as np
 import random
 from scipy.signal import savgol_filter
 
@@ -116,13 +116,13 @@ class EvolutionaryStrategy:
         offspring = []
 
         for _ in range(self.num_offspring):
-            idx = numpy.random.randint(0, self.population_size)
+            idx = np.random.randint(0, self.population_size)
             parent = self.population[idx]
             path_vector = []
 
             # Generating the path vector from normally distributed values for every weight group.
             for _ in range(0, len(parent.weights), self.weight_group_size):
-                delta_weights = list(numpy.random.normal(0.0, self.standard_deviation, 1)) * self.weight_group_size
+                delta_weights = list(np.random.normal(0.0, self.standard_deviation, 1)) * self.weight_group_size
                 path_vector.extend(delta_weights)
 
             mutated_vector = [weight * self.mutation_factor for weight in path_vector]
@@ -177,14 +177,14 @@ class EvolutionaryStrategy:
         probabilities = [candidate.fitness / population_fitness for candidate in self.population]
 
         # Taking the complement of the probabilities as we have to minimize the lap time.
-        probabilities = 1 - numpy.array(probabilities)
+        probabilities = 1 - np.array(probabilities)
         probabilities = probabilities / probabilities.sum()
 
         print("Best (Min) Fitness: {}".format(min([candidate.fitness for candidate in self.population])))
         print("Average Fitness: {}".format(population_fitness / len(self.population)))
 
-        self.population = list(numpy.random.choice(self.population, size=self.population_size, replace=False,
-                                                   p=probabilities))
+        self.population = list(np.random.choice(self.population, size=self.population_size, replace=False,
+                                                p=probabilities))
         return self.population
 
     def run(self):
