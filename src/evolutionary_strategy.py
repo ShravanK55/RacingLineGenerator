@@ -37,6 +37,11 @@ class Candidate:
     def fitness(self):
         """
         Gets the fitness of the Candidate.
+        NOTE: The fitness is equal to the lap time of the candidate. The lower the fitness, the better the solution.
+
+        Returns:
+            lap_time(float): Lap time of the car in seconds.
+
         """
         return self.lap_time
 
@@ -80,6 +85,7 @@ class EvolutionaryStrategy:
         self.num_offspring = num_offspring
         self.mutation_factor = mutation_factor
         self.standard_deviation = standard_deviation
+        self.candidate_length = len(self.left_limit.vertices)
 
     def generate_population(self):
         """

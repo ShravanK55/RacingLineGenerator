@@ -3,6 +3,7 @@ Module for implementing various utility functions.
 """
 
 import bpy
+import numpy as np
 
 
 def clamp(value, min_value, max_value):
@@ -19,6 +20,21 @@ def clamp(value, min_value, max_value):
 
     """
     return max(min(value, max_value), min_value)
+
+
+def en0i(n):
+    """
+    Method to get one of the constants used in the calculation of step size update.
+    Refer to https://arxiv.org/pdf/1604.00772.pdf for E||N(0, I)||
+
+    Args:
+        n(int): Length of the solution vector.
+
+    Returns:
+        en0i(float): Constant involved in the calculation of the step size update.
+
+    """
+    return np.sqrt(n) * (1 - 1.0 / (4 * n) + 1.0 / (21 * n * n))
 
 
 def generate_mesh_from_vertices(vertices, mesh_name="racing_line", collection_name="Collection"):
