@@ -11,6 +11,7 @@ import bpy
 from mathutils import Vector
 
 from car import Car
+from cma_evolutionary_strategy import CMAEvolutionaryStrategy
 from evolutionary_strategy import EvolutionaryStrategy
 from lap_time_calculator import LapTimeCalculator
 from racing_line import RacingLine
@@ -43,7 +44,7 @@ print("Sector 0 exit speed: {}".format(lap_time_calculator.get_sector_exit_veloc
 lap_time = lap_time_calculator.calculate_lap_time(left_line, car, 80.0)
 print("Lap time: {}".format(lap_time))
 
-strategy = EvolutionaryStrategy(left_line, right_line, car, starting_velocity=80.0)
+strategy = CMAEvolutionaryStrategy(left_line, right_line, car, starting_velocity=80.0)
 best_candidate = strategy.run()
 r_line = RacingLine.generate_from_weights(best_candidate.weights, left_line, right_line)
 generate_mesh_from_vertices(r_line.vertices)

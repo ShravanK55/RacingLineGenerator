@@ -5,7 +5,7 @@ Module that implements the CMA evolutionary strategy.
 import numpy as np
 
 from evolutionary_strategy import Candidate, EvolutionaryStrategy
-from utils import en0i
+from utils import clamp, en0i
 
 
 class CMAEvolutionaryStrategy(EvolutionaryStrategy):
@@ -39,16 +39,16 @@ class CMAEvolutionaryStrategy(EvolutionaryStrategy):
             population_size=population_size, iterations=iterations, standard_deviation=standard_deviation)
 
         # Population variables.
-        self.population_matrix = np.array()
-        self.means = np.array()
-        self.covariance_matrix = np.array()
+        self.population_matrix = np.array([[]])
+        self.means = np.array([[]])
+        self.covariance_matrix = np.array([[]])
 
         # Path vectors
-        self.p_c = np.array()
-        self.p_sigma = np.array()
+        self.p_c = np.array([[]])
+        self.p_sigma = np.array([[]])
 
         # Number of parents/candidates to select.
-        self.mu = self.population_size / 2
+        self.mu = int(self.population_size / 2)
 
         # Weight of each selected element.
         self.weight = 1.0 / self.mu
@@ -71,8 +71,8 @@ class CMAEvolutionaryStrategy(EvolutionaryStrategy):
         self.d_sigma = 1.0
 
         # Stores the Eigen values and vectors of the covariance matrix.
-        self.eigen_values = np.array()
-        self.eigen_vectors = np.array()
+        self.eigen_values = np.array([[]])
+        self.eigen_vectors = np.array([[]])
 
     def generate_population(self):
         """
@@ -105,8 +105,10 @@ class CMAEvolutionaryStrategy(EvolutionaryStrategy):
             random_vector = np.random.normal(0.0, 1.0, self.candidate_length)
             random_vector = np.reshape(random_vector, (-1, 1))
 
-            new_weights = self.means + self.standard_deviation * self.eigen_vectors * self.eigen_values * random_vector
+            new_weights = self.means + self.standard_deviation * (self.eigen_vectors.dot(
+                self.eigen_values.dot(random_vector)))
             new_weights = new_weights.transpose()[0]
+            new_weights = [clamp(w, 0.0, 1.0) for w in new_weights]
 
             new_candidate = Candidate(list(new_weights))
             offspring.append(new_candidate)
@@ -129,9 +131,11 @@ class CMAEvolutionaryStrategy(EvolutionaryStrategy):
             average_fitness = self.get_average_fitness()
             print("Generation {}".format(generation))
             print("Average fitness: {}".format(average_fitness))
+            print("Standard deviation: {}".format(self.standard_deviation))
 
             # Getting the Eigen decomposition of the covariance matrix.
-            self.eigen_values, self.eigen_vectors = np.linalg.eig(self.covariance_matrix)
+            self.eigen_values, self.eigen_vectors = np.linalg.eigh(self.covariance_matrix)
+            self.eigen_values = np.sqrt(np.diag(self.eigen_values))
 
             # Calculating the new population.
             self.generate_offspring()
@@ -151,13 +155,14 @@ class CMAEvolutionaryStrategy(EvolutionaryStrategy):
             mu_update = np.array([[0.0] * self.candidate_length] * self.candidate_length)
             for idx in range(self.mu):
                 rhs = (np.reshape(self.population_matrix[idx], (-1, 1)) - self.means) / self.standard_deviation
-                mu_update = mu_update + (self.weight * rhs * rhs.transpose())
+                mu_update = mu_update + (self.weight * (rhs.dot(rhs.transpose())))
 
-            self.covariance_matrix = (1 - self.c_cov) * self.covariance_matrix + self.c_cov / self.mu_cov * self.p_c * \
-                self.p_c.transpose() + self.c_cov * (1 - 1 / self.mu_cov) * mu_update
+            self.covariance_matrix = (1 - self.c_cov) * self.covariance_matrix + self.c_cov / self.mu_cov * \
+                (self.p_c.dot(self.p_c.transpose())) + self.c_cov * (1 - 1 / self.mu_cov) * mu_update
 
             # Updating the step size.
-            decomposed_cov = self.eigen_vectors * np.linalg.inv(self.eigen_values) * self.eigen_vectors.transpose()
+            decomposed_cov = self.eigen_vectors.dot(np.linalg.inv(self.eigen_values).dot(
+                self.eigen_vectors.transpose()))
             self.p_sigma = (1 - self.c_sigma) * self.p_sigma + np.sqrt(self.c_sigma * (2 - self.c_sigma) * \
                 self.mu_eff) * decomposed_cov * (new_means - self.means) / self.standard_deviation
             p_sigma_sum_squares = np.sum(np.square(self.p_sigma))

@@ -100,8 +100,10 @@ class EvolutionaryStrategy:
         for _ in range(self.population_size):
             # Creating weights in groups.
             weights = []
-            for _ in range(0, len(self.left_limit.vertices), self.weight_group_size):
-                weights.extend([random.uniform(0.0, 1.0)] * self.weight_group_size)
+            for idx in range(0, self.candidate_length, self.weight_group_size):
+                group_size = self.weight_group_size if idx + self.weight_group_size - 1 < self.candidate_length else \
+                    self.candidate_length - idx
+                weights.extend([random.uniform(0.0, 1.0)] * group_size)
 
             # Smoothening weights using the Savitzsky-Golay filter (cubic).
             if self.smoothing_length > 0:
@@ -128,8 +130,10 @@ class EvolutionaryStrategy:
             path_vector = []
 
             # Generating the path vector from normally distributed values for every weight group.
-            for _ in range(0, len(parent.weights), self.weight_group_size):
-                delta_weights = list(np.random.normal(0.0, self.standard_deviation, 1)) * self.weight_group_size
+            for w_idx in range(0, len(parent.weights), self.weight_group_size):
+                group_size = self.weight_group_size if w_idx + self.weight_group_size - 1 < len(parent.weights) else \
+                    len(parent.weights) - idx
+                delta_weights = list(np.random.normal(0.0, self.standard_deviation, 1)) * group_size
                 path_vector.extend(delta_weights)
 
             mutated_vector = [weight * self.mutation_factor for weight in path_vector]
