@@ -2,10 +2,10 @@
 Module that implements the CMA evolutionary strategy.
 """
 
-from utils import en0i
 import numpy as np
 
 from evolutionary_strategy import Candidate, EvolutionaryStrategy
+from utils import en0i
 
 
 class CMAEvolutionaryStrategy(EvolutionaryStrategy):

@@ -2,7 +2,12 @@
 Script to generate racing lines using genetic algorithms.
 """
 
-import bpy, bmesh, os, struct, math
+import math
+import os
+import struct
+
+import bmesh
+import bpy
 from mathutils import Vector
 
 from car import Car
@@ -10,7 +15,6 @@ from evolutionary_strategy import EvolutionaryStrategy
 from lap_time_calculator import LapTimeCalculator
 from racing_line import RacingLine
 from utils import generate_mesh_from_vertices
-
 
 TRACK_FILE_NAME = "fast_lane.ai"
 BORDER_LEFT_NAME = "border_left6"

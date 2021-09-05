@@ -3,6 +3,7 @@ Module to calculate lap times for a given car and racing line.
 """
 
 from matplotlib import pyplot
+
 from constants import AIR_DENSITY, GRAV_ACCELERATION
 
 

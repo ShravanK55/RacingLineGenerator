@@ -2,8 +2,9 @@
 Module that implements the evolutionary strategy.
 """
 
-import numpy as np
 import random
+
+import numpy as np
 from scipy.signal import savgol_filter
 
 from lap_time_calculator import LapTimeCalculator
